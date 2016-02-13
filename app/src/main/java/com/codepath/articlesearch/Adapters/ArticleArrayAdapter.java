@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -78,9 +78,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
 
         viewHolder.tvTitle.setText(article.headline.main);
         if(!article.multimedias.isEmpty()) {
-            Picasso.with(resultView.getContext())
+            Glide.with(resultView.getContext())
                     .load(NYTIMESBASEURL + article.multimedias.get(0).url)
-                    .fit().centerInside()
+                    .fitCenter()
                     .into(viewHolder.ivCoverImage);
         }
     }
