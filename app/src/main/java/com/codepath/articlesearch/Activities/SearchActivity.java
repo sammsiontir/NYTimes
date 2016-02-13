@@ -12,9 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.codepath.articlesearch.ArticleArrayAdapter;
+import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
+import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
-import com.codepath.articlesearch.Response;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -32,12 +33,14 @@ import cz.msebera.android.httpclient.Header;
 public class SearchActivity extends AppCompatActivity {
     private static final String KEY = "3220dd55c1e4a045bfb5df5b56a65b37:13:74337724";
     private static final String BASEURL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
-    private int pageNumber;
+
+    private String queryString = "";
+    private int pageNumber = 0;
 
     private ArrayList<Response.Article> articles;
     private ArticleArrayAdapter aAdapter;
 
-    @Bind(R.id.gvResults) RecyclerView gvResults;
+    @Bind(R.id.rvResults) RecyclerView rvResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +59,54 @@ public class SearchActivity extends AppCompatActivity {
         // Create adapter passing in the sample user data
         aAdapter = new ArticleArrayAdapter(articles);
         // Attach the adapter to the recyclerview to populate items
-        gvResults.setAdapter(aAdapter);
+        rvResults.setAdapter(aAdapter);
         // First param is number of columns and second param is orientation i.e Vertical or Horizontal
         StaggeredGridLayoutManager gridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         // Set layout manager to position the items
-        gvResults.setLayoutManager(gridLayoutManager);
+        rvResults.setLayoutManager(gridLayoutManager);
 
+        // Set item click behavior
         aAdapter.setOnItemClickListener(new ArticleArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Response.Article selectedArticle = articles.get(position);
                 // create an intent to display article
                 Intent i = new Intent(getApplicationContext(), ArticleDetailActivity.class);
                 // get the article to display
-                Response.Article article = articles.get(position);
+                Response.Article selectedArticle = articles.get(position);
                 // pass the article into intent
-                i.putExtra("url", article.webUrl);
+                i.putExtra("url", selectedArticle.webUrl);
                 // launch the activity
                 startActivity(i);
             }
         });
 
+        // Set scrolling behavior
+        rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                customLoadMoreDataFromApi(page);
+            }
+        });
+    }
+
+    private void customLoadMoreDataFromApi(int page) {
+        // Send an API request to retrieve appropriate data using the offset value as a parameter.
+        // Deserialize API response and then construct new objects to append to the adapter
+        // Add the new objects to the data source for the adapter
+        // For efficiency purposes, notify the adapter of only the elements that got changed
+        // curSize will equal to the index of the first element inserted because the list is 0-indexed
+        // all aboves are in articleSearch function
+        articleSearch(queryString);
+
+
+    }
+
+
+    public void clearResults() {
+        articles.clear();
+        aAdapter.notifyDataSetChanged();
+        queryString = "";
     }
 
     @Override
@@ -90,8 +119,11 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // clear previous results
+                clearResults();
                 // perform query here
-                articleSearch(query);
+                queryString = query;
+                articleSearch(queryString);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
@@ -143,7 +175,9 @@ public class SearchActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 articles.addAll(JSONResponse.articles);
-                aAdapter.notifyDataSetChanged();
+                // notify the adapter
+                int curSize = aAdapter.getItemCount();
+                aAdapter.notifyItemRangeInserted(curSize, articles.size() - 1);
             }
         });
 

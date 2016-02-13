@@ -1,4 +1,4 @@
-package com.codepath.articlesearch;
+package com.codepath.articlesearch.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.articlesearch.Models.Response;
+import com.codepath.articlesearch.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

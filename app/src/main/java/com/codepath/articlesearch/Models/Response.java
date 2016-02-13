@@ -1,4 +1,4 @@
-package com.codepath.articlesearch;
+package com.codepath.articlesearch.Models;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -14,10 +14,10 @@ public class Response {
         public String webUrl;
 
         @SerializedName("headline")
-        Headline headline;
+        public Headline headline;
 
         @SerializedName("multimedia")
-        ArrayList<Multimedia> multimedias;
+        public ArrayList<Multimedia> multimedias;
     }
 
 
