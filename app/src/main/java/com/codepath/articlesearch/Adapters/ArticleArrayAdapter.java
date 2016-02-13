@@ -80,7 +80,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         if(!article.multimedias.isEmpty()) {
             Picasso.with(resultView.getContext())
                     .load(NYTIMESBASEURL + article.multimedias.get(0).url)
-                    .fit()
+                    .fit().centerInside()
                     .into(viewHolder.ivCoverImage);
         }
     }

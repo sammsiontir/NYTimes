@@ -98,8 +98,6 @@ public class SearchActivity extends AppCompatActivity {
         // curSize will equal to the index of the first element inserted because the list is 0-indexed
         // all aboves are in articleSearch function
         articleSearch(queryString);
-
-
     }
 
 
@@ -132,6 +130,8 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                // clear previous results
+                clearResults();
                 return false;
             }
         });
