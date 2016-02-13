@@ -1,6 +1,9 @@
 package com.codepath.articlesearch.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
 import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
@@ -157,6 +161,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void articleSearch(String keyWrods) {
+        checkInternetStatus();
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("api-key", KEY);
@@ -182,5 +187,19 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         pageNumber++;
+    }
+
+    public void checkInternetStatus() {
+        if(!isNetworkAvailable()) {
+            String warningMessage = "No connection! Please check you network setting!";
+            Toast.makeText(this, warningMessage, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }
