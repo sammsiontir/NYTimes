@@ -1,5 +1,6 @@
-package com.codepath.articlesearch;
+package com.codepath.articlesearch.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.codepath.articlesearch.ArticleArrayAdapter;
+import com.codepath.articlesearch.R;
+import com.codepath.articlesearch.Response;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -74,12 +78,10 @@ public class SearchActivity extends AppCompatActivity {
         // Set layout manager to position the items
         gvResults.setLayoutManager(gridLayoutManager);
 
-
-
-        /*
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        aAdapter.setOnItemClickListener(new ArticleArrayAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(View view, int position) {
+                Response.Article selectedArticle = articles.get(position);
                 // create an intent to display article
                 Intent i = new Intent(getApplicationContext(), ArticleDetailActivity.class);
                 // get the article to display
@@ -90,7 +92,7 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        */
+
     }
 
     @Override

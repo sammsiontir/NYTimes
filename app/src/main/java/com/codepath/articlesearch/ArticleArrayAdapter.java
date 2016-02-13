@@ -20,13 +20,33 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
     private ArrayList<Response.Article> articles;
     private View resultView;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    // Define listener member variable
+    private static OnItemClickListener listener;
+    // Define the listener interface
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+    // Define the method that allows the parent activity or fragment to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.ivCoverImage) ImageView ivCoverImage;
         @Bind(R.id.tvTitle) TextView tvTitle;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
         }
     }
 

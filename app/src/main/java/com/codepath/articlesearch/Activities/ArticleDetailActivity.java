@@ -1,10 +1,12 @@
-package com.codepath.articlesearch;
+package com.codepath.articlesearch.Activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.codepath.articlesearch.R;
 
 public class ArticleDetailActivity extends AppCompatActivity {
 
