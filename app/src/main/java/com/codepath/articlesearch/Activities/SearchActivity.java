@@ -2,16 +2,15 @@ package com.codepath.articlesearch.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 
 import com.codepath.articlesearch.ArticleArrayAdapter;
 import com.codepath.articlesearch.R;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
@@ -40,11 +38,6 @@ public class SearchActivity extends AppCompatActivity {
     private ArticleArrayAdapter aAdapter;
 
     @Bind(R.id.gvResults) RecyclerView gvResults;
-    @Bind(R.id.etQuery) EditText etQuery;
-    @OnClick(R.id.btnSearch)
-    public void btnSearch() {
-        articleSearch(etQuery.getText().toString());
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +46,6 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         // Initialize private data members
         articles = new ArrayList<>();
@@ -99,6 +84,27 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+                articleSearch(query);
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+
         return true;
     }
 
@@ -110,9 +116,10 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_advaced_search) {
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
