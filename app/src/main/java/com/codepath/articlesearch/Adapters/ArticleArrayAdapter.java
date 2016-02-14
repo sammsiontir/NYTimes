@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapter.ViewHolder>  {
+public class ArticleArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
     private static final String NYTIMESBASEURL = "http://www.nytimes.com/";
     private ArrayList<Response.Article> articles;
     private View resultView;
+    private final int FULL = 0;
+    private final int CONCISE = 1;
 
     // Define listener member variable
     private static OnItemClickListener listener;
@@ -40,8 +42,21 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
+        }
+    }
 
-
+    public static class ViewHolderConcise extends RecyclerView.ViewHolder {
+        @Bind(R.id.tvTitleConcise) TextView tvTitleConcise;
+        public ViewHolderConcise(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -58,35 +73,51 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
+        RecyclerView.ViewHolder viewHolder;
         // Inflate the custom layout
-        resultView = inflater.inflate(R.layout.item_article_result, parent, false);
-
-        // Return a new holder instance
-        ViewHolder viewHolder = new ViewHolder(resultView);
+        if (viewType == FULL) {
+            resultView = inflater.inflate(R.layout.item_article_result, parent, false);
+            viewHolder = new ViewHolder(resultView);
+        }
+        else {
+            resultView = inflater.inflate(R.layout.item_article_result_concise, parent, false);
+            viewHolder = new ViewHolderConcise(resultView);
+        }
         return viewHolder;
-
     }
 
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Response.Article article = articles.get(position);
-
-        viewHolder.tvTitle.setText(article.headline.main);
-        if(!article.multimedias.isEmpty()) {
+        if (viewHolder.getItemViewType() == FULL) {
+            ViewHolder vFull = (ViewHolder) viewHolder;
             Glide.with(resultView.getContext())
                     .load(NYTIMESBASEURL + article.multimedias.get(0).url)
                     .fitCenter()
-                    .into(viewHolder.ivCoverImage);
+                    .into(vFull.ivCoverImage);
+            vFull.tvTitle.setText(article.headline.main);
+        }
+        else {
+            ViewHolderConcise vConcise = (ViewHolderConcise) viewHolder;
+            vConcise.tvTitleConcise.setText(article.headline.main);
         }
     }
 
     @Override
     public int getItemCount() {
         return articles.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (articles.get(position).multimedias.isEmpty()) {
+            return CONCISE;
+        }
+        return FULL;
     }
 }
