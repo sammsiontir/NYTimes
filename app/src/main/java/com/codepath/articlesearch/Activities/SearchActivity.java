@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
 import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.FilterDialog;
 import com.codepath.articlesearch.Models.Query;
 import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
@@ -35,11 +37,15 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements FilterDialog.FilterDialogListener {
     private final int REQUEST_FILTER = 21;
     private static final String BASEURL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
     private Query query;
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
 
     private ArrayList<Response.Article> articles;
     private ArticleArrayAdapter aAdapter;
@@ -154,14 +160,9 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_advaced_search) {
-            // create an intent to display article
-            Intent i = new Intent(getApplicationContext(), FilterActivity.class);
-            // pass the article into intent
-            i.putExtra("query", query);
-            // launch the activity
-            startActivityForResult(i, REQUEST_FILTER);
-            Log.d("DEBUG", query.toString());
-            return true;
+            FragmentManager fm = getSupportFragmentManager();
+            FilterDialog editNameDialog = FilterDialog.newInstance(query);
+            editNameDialog.show(fm, "fragment_edit_name");
         }
 
         return super.onOptionsItemSelected(item);
@@ -215,5 +216,10 @@ public class SearchActivity extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    @Override
+    public void onFinishFilterDialog(Query updatedQuery) {
+        query = updatedQuery;
     }
 }

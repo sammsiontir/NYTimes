@@ -1,27 +1,26 @@
-package com.codepath.articlesearch.Activities;
+package com.codepath.articlesearch;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.codepath.articlesearch.DatePickerFragment;
 import com.codepath.articlesearch.Models.Query;
-import com.codepath.articlesearch.R;
 
 import java.text.SimpleDateFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FilterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class FilterDialog extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
     @Bind(R.id.tvDate) TextView tvDate;
     @Bind(R.id.swSort) Switch swSort;
     @Bind(R.id.cbArts) CheckBox cbArts;
@@ -31,23 +30,50 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     private Query query;
     private final SimpleDateFormat FORMAT_DISPLAY = new SimpleDateFormat("yyyy-MM-dd");
 
+    public interface FilterDialogListener {
+        void onFinishFilterDialog(Query updatedQuery);
+        void onFinishEditDialog(CheckBox )
+    }
+
+
+    public FilterDialog() {
+    }
+
+    public static FilterDialog newInstance(Query query) {
+        FilterDialog frag = new FilterDialog();
+        Bundle args = new Bundle();
+        args.putString("title", "Advanced Filter");
+        args.putParcelable("query", query);
+        frag.setArguments(args);
+        return frag;
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_filter, container);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Bind with views
-        ButterKnife.bind(this);
-        // Get current filter setting
-        query = getIntent().getParcelableExtra("query");
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Get field from view
+        ButterKnife.bind(getDialog());
+        // Get passing data
+        String title = getArguments().getString("title", "Enter Name");
+        query = getArguments().getParcelable("query");
         Log.d("DEBUG", query.toString());
-        // Display current filter setting
+        getDialog().setTitle(title);
+
+        // bind views
+        ButterKnife.bind(this, view);
+
+        // Display passing data
         setFilterDisplay();
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -58,9 +84,12 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     }
 
     public void displayBeginDate() {
-        tvDate.setText(FORMAT_DISPLAY.format(query.beginDate.getTime()));
+        String date = FORMAT_DISPLAY.format(query.beginDate.getTime());
+        Log.d("DEBUG", date);
+        tvDate.setText(date);
     }
 
+    /*
     public void editDate(View view) {
         DatePickerFragment datePickerFragment = new DatePickerFragment();
         Bundle bundle = new Bundle();
@@ -68,6 +97,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         datePickerFragment.setArguments(bundle);
         datePickerFragment.show(getFragmentManager(), "datePicker");
     }
+    */
 
     private void setFilterDisplay() {
         // begin date
@@ -121,12 +151,9 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         update();
 
         // pass query back
-        Intent result = new Intent();
-        result.putExtra("query", query);
-        setResult(RESULT_OK, result);
-
-        // finish
-        this.finish();
+        FilterDialogListener listener = (FilterDialogListener) getActivity();
+        listener.onFinishFilterDialog(query);
+        dismiss();
     }
 
     public void switchSort(View view) {
@@ -141,4 +168,5 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
             swSort.setText("NEWEST");
         }
     }
+
 }
