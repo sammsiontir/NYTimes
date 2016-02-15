@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,12 +19,12 @@ import android.widget.Toast;
 
 import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
 import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.Models.Query;
 import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,11 +36,10 @@ import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
-    private static final String KEY = "3220dd55c1e4a045bfb5df5b56a65b37:13:74337724";
+    private final int REQUEST_FILTER = 21;
     private static final String BASEURL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
-    private String queryString = "";
-    private int pageNumber = 0;
+    private Query query;
 
     private ArrayList<Response.Article> articles;
     private ArticleArrayAdapter aAdapter;
@@ -56,6 +56,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // Initialize private data members
         articles = new ArrayList<>();
+        query = new Query();
 
         // Bind views in the layout
         ButterKnife.bind(this);
@@ -101,14 +102,14 @@ public class SearchActivity extends AppCompatActivity {
         // For efficiency purposes, notify the adapter of only the elements that got changed
         // curSize will equal to the index of the first element inserted because the list is 0-indexed
         // all aboves are in articleSearch function
-        articleSearch(queryString);
+        articleSearch();
     }
 
 
     public void clearResults() {
+        query.clear();
         articles.clear();
         aAdapter.notifyDataSetChanged();
-        queryString = "";
     }
 
     @Override
@@ -116,16 +117,17 @@ public class SearchActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
+        // For Search bar
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String keywords) {
                 // clear previous results
                 clearResults();
                 // perform query here
-                queryString = query;
-                articleSearch(queryString);
+                query.query = keywords;
+                articleSearch();
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
@@ -140,6 +142,8 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+        // For filter
+        MenuItem filterItem = menu.findItem(R.id.action_advaced_search);
 
         return true;
     }
@@ -153,22 +157,35 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_advaced_search) {
+            // create an intent to display article
+            Intent i = new Intent(getApplicationContext(), FilterActivity.class);
+            // pass the article into intent
+            i.putExtra("query", query);
+            // launch the activity
+            startActivityForResult(i, REQUEST_FILTER);
+            Log.d("DEBUG", query.toString());
             return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void articleSearch(String keyWrods) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_FILTER is defined above
+        Log.d("DEBUG", query.toString());
+        if (resultCode == RESULT_OK && requestCode == REQUEST_FILTER) {
+            query = data.getParcelableExtra("query");
+            Log.d("DEBUG", query.toString());
+        }
+    }
+
+    public void articleSearch() {
         checkInternetStatus();
         AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("api-key", KEY);
-        params.put("page", pageNumber);
-        params.put("q", keyWrods);
 
-        client.get(BASEURL, params, new JsonHttpResponseHandler() {
+        Log.d("DEBUG", query.toString());
+        client.get(BASEURL, query.getParams(), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Gson gson = new Gson();
@@ -186,7 +203,7 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        pageNumber++;
+        query.page++;
     }
 
     public void checkInternetStatus() {
