@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">ArticleSearch</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">NYTimes Search</string>
     <string name="title_activity_article_detail">ArticleDetailActivity</string>
-    <string name="title_activity_filter">FilterActivity</string>
+    <string name="title_activity_filter">Advanced Filter</string>
 </resources>
