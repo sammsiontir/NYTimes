@@ -1,114 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:id="@+id/Layout_container" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Begin Date"
-        android:id="@+id/tvDateTitle"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/tvDate"
-        android:layout_alignEnd="@+id/tvDate" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="1851/01/01"
-        android:id="@+id/tvDate"
-        android:onClick="editDate"
-        android:layout_below="@+id/tvDateTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Begin Date: "
+            android:id="@+id/etDateTitle"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="News Desk"
-        android:id="@+id/tvDeskTitle"
-        android:layout_below="@+id/tvDate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/etDate"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/tvDeskTitle"
+            android:layout_toEndOf="@+id/tvDeskTitle"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Arts"
-        android:id="@+id/cbArts"
-        android:layout_below="@+id/tvDeskTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:checked="false"
-        android:layout_alignRight="@+id/cbFashion"
-        android:layout_alignEnd="@+id/cbFashion" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="News Desk: "
+            android:id="@+id/tvDeskTitle"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/etDateTitle"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fashion &amp; Style"
-        android:id="@+id/cbFashion"
-        android:layout_below="@+id/cbArts"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:checked="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Arts"
+            android:id="@+id/cbArts"
+            android:checked="false"
+            android:layout_alignTop="@+id/tvDeskTitle"
+            android:layout_alignLeft="@+id/etDate"
+            android:layout_alignStart="@+id/etDate" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sports"
-        android:id="@+id/cbSports"
-        android:layout_below="@+id/cbFashion"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:checked="false"
-        android:layout_alignRight="@+id/tvSortTitle"
-        android:layout_alignEnd="@+id/tvSortTitle" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fashion &amp; Style"
+            android:id="@+id/cbFashion"
+            android:checked="false"
+            android:layout_below="@+id/cbArts"
+            android:layout_alignLeft="@+id/cbArts"
+            android:layout_alignStart="@+id/cbArts" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Sort Order"
-        android:id="@+id/tvSortTitle"
-        android:layout_below="@+id/cbSports"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sports"
+            android:id="@+id/cbSports"
+            android:checked="false"
+            android:layout_below="@+id/cbFashion"
+            android:layout_alignLeft="@+id/cbFashion"
+            android:layout_alignStart="@+id/cbFashion" />
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Newest"
-        android:id="@+id/swSort"
-        android:layout_below="@+id/tvSortTitle"
-        android:onClick="switchSort"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Sort Order: "
+            android:id="@+id/tvSortTitle"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/cbSports"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SAVE"
-        android:id="@+id/btnSave"
-        android:layout_below="@+id/swSort"
-        android:onClick="btnSave"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/swSort"
-        android:layout_alignEnd="@+id/swSort" />
-</RelativeLayout>
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Newest"
+            android:id="@+id/swSort"
+            android:layout_alignTop="@+id/tvSortTitle"
+            android:layout_alignLeft="@+id/cbSports"
+            android:layout_alignStart="@+id/cbSports"
+            android:layout_alignRight="@+id/etDate"
+            android:layout_alignEnd="@+id/etDate" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAVE"
+            android:id="@+id/btnSave"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/swSort"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</FrameLayout>
+

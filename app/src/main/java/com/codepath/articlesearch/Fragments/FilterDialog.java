@@ -1,40 +1,36 @@
-package com.codepath.articlesearch;
+package com.codepath.articlesearch.Fragments;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import com.codepath.articlesearch.Activities.SearchActivity;
 import com.codepath.articlesearch.Models.Query;
+import com.codepath.articlesearch.R;
 
 import java.text.SimpleDateFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FilterDialog extends AppCompatDialogFragment implements DatePickerDialog.OnDateSetListener {
-    @Bind(R.id.tvDate) TextView tvDate;
+public class FilterDialog extends DialogFragment {
+    @Bind(R.id.etDate) EditText etDate;
     @Bind(R.id.swSort) Switch swSort;
     @Bind(R.id.cbArts) CheckBox cbArts;
     @Bind(R.id.cbFashion) CheckBox cbFashion;
     @Bind(R.id.cbSports) CheckBox cbSport;
+    @Bind(R.id.btnSave) Button btnSave;
 
-    private Query query;
+    public Query query;
     private final SimpleDateFormat FORMAT_DISPLAY = new SimpleDateFormat("yyyy-MM-dd");
-
-    public interface FilterDialogListener {
-        void onFinishFilterDialog(Query updatedQuery);
-        void onFinishEditDialog(CheckBox )
-    }
-
 
     public FilterDialog() {
     }
@@ -59,16 +55,44 @@ public class FilterDialog extends AppCompatDialogFragment implements DatePickerD
         // Get field from view
         ButterKnife.bind(getDialog());
         // Get passing data
-        String title = getArguments().getString("title", "Enter Name");
-        query = getArguments().getParcelable("query");
+        query = ((SearchActivity)getActivity()).getQuery();
         Log.d("DEBUG", query.toString());
-        getDialog().setTitle(title);
+        getDialog().setTitle("Filter");
 
         // bind views
         ButterKnife.bind(this, view);
 
         // Display passing data
         setFilterDisplay();
+
+        // Save
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                update();
+                ((SearchActivity) getActivity()).setQuery(query);
+                //((SearchActivity) getActivity()).clearResults();
+                //((SearchActivity) getActivity()).articleSearch();
+                dismiss();
+            }
+        });
+
+        // swSort
+        swSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchSort(v);
+            }
+        });
+
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.setTargetFragment(FilterDialog.this, 300);
+                newFragment.show(getFragmentManager(), "datePicker");
+            }
+        });
     }
 
     @Override public void onDestroyView() {
@@ -76,28 +100,11 @@ public class FilterDialog extends AppCompatDialogFragment implements DatePickerD
         ButterKnife.unbind(this);
     }
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        // store the values selected into a Calendar instance
-        query.onDateSet(year, monthOfYear,dayOfMonth);
-        displayBeginDate();
-    }
-
     public void displayBeginDate() {
         String date = FORMAT_DISPLAY.format(query.beginDate.getTime());
         Log.d("DEBUG", date);
-        tvDate.setText(date);
+        etDate.setText(date);
     }
-
-    /*
-    public void editDate(View view) {
-        DatePickerFragment datePickerFragment = new DatePickerFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("query", query);
-        datePickerFragment.setArguments(bundle);
-        datePickerFragment.show(getFragmentManager(), "datePicker");
-    }
-    */
 
     private void setFilterDisplay() {
         // begin date
@@ -144,16 +151,6 @@ public class FilterDialog extends AppCompatDialogFragment implements DatePickerD
         if(cbSport.isChecked()) query.desks.add(Query.SPORTS);
         // sort
         query.sort = getSwSort();
-    }
-
-    public void btnSave(View view) {
-        // update query
-        update();
-
-        // pass query back
-        FilterDialogListener listener = (FilterDialogListener) getActivity();
-        listener.onFinishFilterDialog(query);
-        dismiss();
     }
 
     public void switchSort(View view) {

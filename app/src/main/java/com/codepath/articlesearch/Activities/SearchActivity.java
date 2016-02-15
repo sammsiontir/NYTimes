@@ -19,8 +19,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
-import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
-import com.codepath.articlesearch.FilterDialog;
+import com.codepath.articlesearch.Adapters.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.Fragments.FilterDialog;
 import com.codepath.articlesearch.Models.Query;
 import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
@@ -37,14 +37,18 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity implements FilterDialog.FilterDialogListener {
+public class SearchActivity extends AppCompatActivity {
     private final int REQUEST_FILTER = 21;
     private static final String BASEURL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
-    private Query query;
+    public Query query;
 
     public void setQuery(Query query) {
         this.query = query;
+    }
+
+    public Query getQuery() {
+        return query;
     }
 
     private ArrayList<Response.Article> articles;
@@ -160,9 +164,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_advaced_search) {
-            FragmentManager fm = getSupportFragmentManager();
-            FilterDialog editNameDialog = FilterDialog.newInstance(query);
-            editNameDialog.show(fm, "fragment_edit_name");
+            openFilter();
         }
 
         return super.onOptionsItemSelected(item);
@@ -218,8 +220,14 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
+    public void openFilter() {
+        FragmentManager fm = getSupportFragmentManager();
+        FilterDialog filterDialog = FilterDialog.newInstance(query);
+        filterDialog.show(fm, "");
+    }
+
     @Override
-    public void onFinishFilterDialog(Query updatedQuery) {
-        query = updatedQuery;
+    protected void onResume() {
+        super.onResume();
     }
 }
