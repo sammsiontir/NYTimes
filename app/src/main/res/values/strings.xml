@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">NYTimes Search</string>
     <string name="title_activity_article_detail">ArticleDetailActivity</string>
-    <string name="title_activity_filter">Advanced Filter</string>
 </resources>

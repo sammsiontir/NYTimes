@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +19,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.articlesearch.Adapters.ArticleArrayAdapter;
-import com.codepath.articlesearch.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.Adapters.EndlessRecyclerViewScrollListener;
+import com.codepath.articlesearch.Fragments.FilterDialog;
 import com.codepath.articlesearch.Models.Query;
 import com.codepath.articlesearch.Models.Response;
 import com.codepath.articlesearch.R;
@@ -39,7 +41,15 @@ public class SearchActivity extends AppCompatActivity {
     private final int REQUEST_FILTER = 21;
     private static final String BASEURL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
-    private Query query;
+    public Query query;
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
 
     private ArrayList<Response.Article> articles;
     private ArticleArrayAdapter aAdapter;
@@ -154,14 +164,7 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_advaced_search) {
-            // create an intent to display article
-            Intent i = new Intent(getApplicationContext(), FilterActivity.class);
-            // pass the article into intent
-            i.putExtra("query", query);
-            // launch the activity
-            startActivityForResult(i, REQUEST_FILTER);
-            Log.d("DEBUG", query.toString());
-            return true;
+            openFilter();
         }
 
         return super.onOptionsItemSelected(item);
@@ -215,5 +218,16 @@ public class SearchActivity extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public void openFilter() {
+        FragmentManager fm = getSupportFragmentManager();
+        FilterDialog filterDialog = FilterDialog.newInstance(query);
+        filterDialog.show(fm, "");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }
