@@ -1,5 +1,6 @@
 package com.codepath.articlesearch.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -8,11 +9,14 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codepath.articlesearch.R;
@@ -23,6 +27,7 @@ import butterknife.ButterKnife;
 public class ArticleDetailActivity extends AppCompatActivity {
 
     @Bind(R.id.wvArticle) WebView wvArticle;
+    public String swapURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +38,27 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+
+        LayoutInflater inflator = (LayoutInflater) this .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.toolbar_article_detail, null);
+        final TextView webURL = (TextView) v.findViewById(R.id.webURL);
 
         ButterKnife.bind(this);
 
         String url = getIntent().getStringExtra("url");
+        swapURL = url;
+        webURL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tmp = (String) webURL.getText();
+                webURL.setText(swapURL);
+                swapURL = tmp;
+            }
+        });
+        webURL.setText(url);
+        getSupportActionBar().setCustomView(v);
+
         final MaterialDialog prDialog = new MaterialDialog.Builder(this)
                 .title("Loading website")
                 .content("Please wait")
