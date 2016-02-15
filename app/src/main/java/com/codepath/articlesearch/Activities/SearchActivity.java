@@ -142,9 +142,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        // For filter
-        MenuItem filterItem = menu.findItem(R.id.action_advaced_search);
-
         return true;
     }
 

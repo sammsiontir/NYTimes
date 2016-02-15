@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Activities.ArticleDetailActivity">
+
+    <item
+        android:id="@+id/menu_item_share"
+        android:title="Share"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
+</menu>
