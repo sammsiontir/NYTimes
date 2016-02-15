@@ -5,7 +5,9 @@ import android.os.Parcelable;
 
 import com.loopj.android.http.RequestParams;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by chengfu_lin on 2/14/16.
@@ -27,6 +29,12 @@ public class Query implements Parcelable {
     public static final String FASHION_AND_STYLE = "Fashion & Style";
     public static final String SPORTS = "Sports";
 
+    // Calendar format
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyyMMdd");
+    private static final int OLDEST_YEAR = 1851;
+    private static final int OLDEST_MONTH = 01;
+    private static final int OLDEST_DAY = 01;
+
 
     // Basic Search
     public int page;
@@ -34,21 +42,31 @@ public class Query implements Parcelable {
 
     // Advanced Search
     public String sort;        // newest | oldest
+    public Calendar beginDate;
     public String begin_date;  // YYYYMMDD
     public String news_desk;   // &fq=news_desk:("Sports" "Foreign")
     public ArrayList<String> desks;
-
-    public void setNewsDesk() {
-        news_desk = "news_desk:(\"Sports\" \"Arts\")";
-    }
 
     public Query() {
         this.page = 0;
         this.query = "";
         this.sort = "newest";
-        this.begin_date = "";
+        onDateSet(OLDEST_YEAR, OLDEST_MONTH, OLDEST_DAY);
         this.news_desk = "";
         this.desks = new ArrayList<>();
+    }
+
+    public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
+        this.beginDate = Calendar.getInstance();
+        // store the values selected into a Calendar instance
+        this.beginDate.set(Calendar.YEAR, year);
+        this.beginDate.set(Calendar.MONTH, monthOfYear);
+        this.beginDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        transformDate();
+    }
+
+    public void transformDate() {
+        this.begin_date = FORMAT.format(this.beginDate.getTime());
     }
 
     // return Parameter for AsyncHttpClient
@@ -98,6 +116,7 @@ public class Query implements Parcelable {
         dest.writeInt(this.page);
         dest.writeString(this.query);
         dest.writeString(this.sort);
+        dest.writeSerializable(this.beginDate);
         dest.writeString(this.begin_date);
         dest.writeString(this.news_desk);
         dest.writeStringList(this.desks);
@@ -107,12 +126,13 @@ public class Query implements Parcelable {
         this.page = in.readInt();
         this.query = in.readString();
         this.sort = in.readString();
+        this.beginDate = (Calendar) in.readSerializable();
         this.begin_date = in.readString();
         this.news_desk = in.readString();
         this.desks = in.createStringArrayList();
     }
 
-    public static final Parcelable.Creator<Query> CREATOR = new Parcelable.Creator<Query>() {
+    public static final Creator<Query> CREATOR = new Creator<Query>() {
         public Query createFromParcel(Parcel source) {
             return new Query(source);
         }

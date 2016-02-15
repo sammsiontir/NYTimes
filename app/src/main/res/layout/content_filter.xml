@@ -30,6 +30,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="1851/01/01"
         android:id="@+id/tvDate"
+        android:onClick="editDate"
         android:layout_below="@+id/tvDateTitle"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

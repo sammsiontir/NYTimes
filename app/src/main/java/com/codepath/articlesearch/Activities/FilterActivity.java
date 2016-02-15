@@ -1,5 +1,6 @@
 package com.codepath.articlesearch.Activities;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,16 +8,20 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.codepath.articlesearch.DatePickerFragment;
 import com.codepath.articlesearch.Models.Query;
 import com.codepath.articlesearch.R;
+
+import java.text.SimpleDateFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FilterActivity extends AppCompatActivity {
+public class FilterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     @Bind(R.id.tvDate) TextView tvDate;
     @Bind(R.id.swSort) Switch swSort;
     @Bind(R.id.cbArts) CheckBox cbArts;
@@ -24,6 +29,8 @@ public class FilterActivity extends AppCompatActivity {
     @Bind(R.id.cbSports) CheckBox cbSport;
 
     private Query query;
+    private final SimpleDateFormat FORMAT_DISPLAY = new SimpleDateFormat("yyyy-MM-dd");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +50,28 @@ public class FilterActivity extends AppCompatActivity {
         setFilterDisplay();
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        // store the values selected into a Calendar instance
+        query.onDateSet(year, monthOfYear,dayOfMonth);
+        displayBeginDate();
+    }
+
+    public void displayBeginDate() {
+        tvDate.setText(FORMAT_DISPLAY.format(query.beginDate.getTime()));
+    }
+
+    public void editDate(View view) {
+        DatePickerFragment datePickerFragment = new DatePickerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("query", query);
+        datePickerFragment.setArguments(bundle);
+        datePickerFragment.show(getFragmentManager(), "datePicker");
+    }
+
     private void setFilterDisplay() {
         // begin date
-        if(!query.begin_date.isEmpty()) tvDate.setText(query.begin_date);
+        displayBeginDate();
 
         // desks
         // clear all
@@ -79,6 +105,7 @@ public class FilterActivity extends AppCompatActivity {
 
     public void update() {
         // begin date
+        // updated when select from calendar
 
         // desks
         query.desks.clear();
